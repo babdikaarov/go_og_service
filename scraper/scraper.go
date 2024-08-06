@@ -31,9 +31,17 @@ func HandleURL(urlStr string) models.OgData {
     c := colly.NewCollector()
 
     // Set up Colly callbacks to extract Open Graph data
-   c.OnHTML("link[rel='icon']", func(e *colly.HTMLElement) {
-        if icon := e.Attr("href"); icon != "" && (len(icon) >= 4 && icon[:4] == "http") {
+    c.OnHTML("link[rel='icon']", func(e *colly.HTMLElement) {
+        icon := e.Attr("href")
+
+        // Check if the href is a full URL
+        if icon != "" && (len(icon) >= 4 && icon[:4] == "http") {
             ogData.Icon = icon
+        } else {
+            // Handle relative paths by prepending the base URL
+            if baseURL, err := e.Request.URL.Parse(icon); err == nil {
+                ogData.Icon = baseURL.String()
+            }
         }
     })
     c.OnHTML("meta[property='og:title']", func(e *colly.HTMLElement) {
