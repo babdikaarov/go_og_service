@@ -31,8 +31,8 @@ func HandleURL(urlStr string) models.OgData {
     c := colly.NewCollector()
 
     // Set up Colly callbacks to extract Open Graph data
-    c.OnHTML("link[rel='icon']", func(e *colly.HTMLElement) {
-        if icon := e.Attr("href"); icon != "" {
+   c.OnHTML("link[rel='icon']", func(e *colly.HTMLElement) {
+        if icon := e.Attr("href"); icon != "" && (len(icon) >= 4 && icon[:4] == "http") {
             ogData.Icon = icon
         }
     })
