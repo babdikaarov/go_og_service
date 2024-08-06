@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/url"
 	"strings"
+	"time"
 
 	"github.com/gocolly/colly/v2"
 )
@@ -31,6 +32,16 @@ func HandleURL(urlStr string) models.OgData {
 
 	// Initialize a new Colly collector
 	c := colly.NewCollector()
+
+	// Set rate limit and concurrency based on the domain
+	if parsedURL.Host == "www.youtube.com" || parsedURL.Host == "youtube.com" {
+		// Set concurrency to 1 for YouTube domains
+		c.Limit(&colly.LimitRule{
+			DomainGlob:  "*youtube.com",
+			Parallelism: 1,
+			RandomDelay: 1 * time.Second,
+		})
+	} 
 
 	// Log requests and responses
 	c.OnRequest(func(r *colly.Request) {
