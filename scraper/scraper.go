@@ -23,6 +23,7 @@ func HandleURL(urlStr string) models.OgData {
         ogData.Title = "not found"
         ogData.Description = "not found"
         ogData.Image = "not found"
+        ogData.Icon = "not found"
         return ogData
     }
 
@@ -30,6 +31,11 @@ func HandleURL(urlStr string) models.OgData {
     c := colly.NewCollector()
 
     // Set up Colly callbacks to extract Open Graph data
+    c.OnHTML("link[rel='icon']", func(e *colly.HTMLElement) {
+        if icon := e.Attr("href"); icon != "" {
+            ogData.Icon = icon
+        }
+    })
     c.OnHTML("meta[property='og:title']", func(e *colly.HTMLElement) {
         if content := e.Attr("content"); content != "" {
             ogData.Title = content
