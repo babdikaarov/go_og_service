@@ -22,7 +22,7 @@ func GetOgData(context *gin.Context) {
 
     // Get URL parameter
     urlParam := context.Query("url")
-    folderParam := context.Query("name")
+    folderParam := context.Query("filename")
 
     // Check if URL parameter is empty
     if urlParam == "" {

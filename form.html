@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+   <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>Generate ZIP File</title>
+   </head>
+   <body>
+      <h1>Generate ZIP File with Open Graph Data</h1>
+      <form action="/generate" method="post">
+         <label for="links">Enter URLs (comma separated):</label><br />
+         <textarea id="links" name="links" rows="5" cols="50"></textarea><br /><br />
+
+         <label for="filename">File Name for JSON:</label><br />
+         <input type="text" id="filename" name="filename" /><br /><br />
+
+         <button type="submit">Generate ZIP</button>
+      </form>
+   </body>
+</html>
