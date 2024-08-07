@@ -5,21 +5,16 @@ import (
 	"log"
 	"net/url"
 	"strings"
-	"time"
 
 	"github.com/gocolly/colly/v2"
 )
 
-// HandleURL scrapes Open Graph data from a URL
 func HandleURL(urlStr string) models.OgData {
-	// Trim whitespace
 	urlStr = strings.TrimSpace(urlStr)
 
-	// Define a variable to hold Open Graph data for the current URL
 	var ogData models.OgData
 	ogData.OriginalURL = urlStr
 
-	// Validate the URL
 	parsedURL, err := url.ParseRequestURI(urlStr)
 	if err != nil || parsedURL.Scheme == "" || parsedURL.Host == "" {
 		log.Printf("Invalid URL: %s, Error: %v", urlStr, err)
@@ -30,20 +25,8 @@ func HandleURL(urlStr string) models.OgData {
 		return ogData
 	}
 
-	// Initialize a new Colly collector
 	c := colly.NewCollector()
 
-	// Set rate limit and concurrency based on the domain
-	if parsedURL.Host == "www.youtube.com" || parsedURL.Host == "youtube.com" {
-		// Set concurrency to 1 for YouTube domains
-		c.Limit(&colly.LimitRule{
-			DomainGlob:  "*youtube.com",
-			Parallelism: 1,
-			RandomDelay: 1 * time.Second,
-		})
-	} 
-
-	// Log requests and responses
 	c.OnRequest(func(r *colly.Request) {
 		log.Printf("Requesting URL: %s", r.URL.String())
 	})
@@ -54,18 +37,40 @@ func HandleURL(urlStr string) models.OgData {
 
 	c.OnHTML("link[rel='icon']", func(e *colly.HTMLElement) {
 		icon := e.Attr("href")
-
-		// Log icon details
-		log.Printf("Found icon href: %s", icon)
-
-		// Check if the href is a full URL
-		if icon != "" && (len(icon) >= 4 && icon[:4] == "http") {
-			ogData.Icon = icon
-		} else {
-			// Handle relative paths by prepending the base URL
-			if baseURL, err := e.Request.URL.Parse(icon); err == nil {
-				ogData.Icon = baseURL.String()
+		log.Printf("Found icon href (rel='icon'): %s", icon)
+		if icon != "" {
+			if !strings.HasPrefix(icon, "http") {
+				if baseURL, err := e.Request.URL.Parse(icon); err == nil {
+					icon = baseURL.String()
+				}
 			}
+			ogData.Icon = icon
+		}
+	})
+
+	c.OnHTML("link[rel='shortcut icon']", func(e *colly.HTMLElement) {
+		icon := e.Attr("href")
+		if ogData.Icon == "" && icon != "" {
+			log.Printf("Found icon href (rel='shortcut icon'): %s", icon)
+			if !strings.HasPrefix(icon, "http") {
+				if baseURL, err := e.Request.URL.Parse(icon); err == nil {
+					icon = baseURL.String()
+				}
+			}
+			ogData.Icon = icon
+		}
+	})
+
+	c.OnHTML("link[href*='favicon']", func(e *colly.HTMLElement) {
+		icon := e.Attr("href")
+		if ogData.Icon == "" && icon != "" {
+			log.Printf("Found favicon href: %s", icon)
+			if !strings.HasPrefix(icon, "http") {
+				if baseURL, err := e.Request.URL.Parse(icon); err == nil {
+					icon = baseURL.String()
+				}
+			}
+			ogData.Icon = icon
 		}
 	})
 
@@ -87,7 +92,6 @@ func HandleURL(urlStr string) models.OgData {
 		}
 	})
 
-	// Scrape the URL
 	err = c.Visit(urlStr)
 	if err != nil {
 		log.Printf("Error visiting URL %s: %v", urlStr, err)
@@ -96,7 +100,6 @@ func HandleURL(urlStr string) models.OgData {
 		ogData.Image = "not found"
 	}
 
-	// Log the final Open Graph data
 	log.Printf("Scraped Open Graph data: %+v", ogData)
 
 	return ogData
