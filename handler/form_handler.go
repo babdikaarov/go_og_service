@@ -28,7 +28,7 @@ func HandleFormSubmission(c *gin.Context) {
 	}
 
 	// Construct the URL for the /og endpoint
-	ogEndpoint := "http://localhost:8080/og?url=" + url.QueryEscape(links) + "&filename=" + url.QueryEscape(filename)
+	ogEndpoint := "/og?url=" + url.QueryEscape(links) + "&filename=" + url.QueryEscape(filename)
 
 	// Redirect to the /og endpoint to handle ZIP file creation
 	c.Redirect(http.StatusSeeOther, ogEndpoint)
