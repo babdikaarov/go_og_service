@@ -92,6 +92,20 @@ func HandleURL(urlStr string) models.OgData {
 		}
 	})
 
+	c.OnHTML("meta[name='description']", func(e *colly.HTMLElement) {
+        if ogData.Description == "" { // Only set if not already set
+            if content := e.Attr("content"); content != "" {
+                ogData.Description = content
+            }
+        }
+    })
+
+    c.OnHTML("title", func(e *colly.HTMLElement) {
+        if ogData.Title == "" { // Only set if not already set
+            ogData.Title = e.Text
+        }
+    })
+
 	err = c.Visit(urlStr)
 	if err != nil {
 		log.Printf("Error visiting URL %s: %v", urlStr, err)
