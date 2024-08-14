@@ -25,14 +25,18 @@ func HandleURL(urlStr string) models.OgData {
 		return ogData
 	}
 
-	c := colly.NewCollector()
+	c := colly.NewCollector(colly.UserAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36"))
 
+	
 	c.OnRequest(func(r *colly.Request) {
 		log.Printf("Requesting URL: %s", r.URL.String())
+		log.Println("Request Headers:", r.Headers)
+		log.Println("Request User-Agent:", r.Headers.Get("User-Agent"))
 		for key, value := range *r.Headers {
 			log.Printf("Request Header: %s: %s", key, value)
 		}
 	})
+
 
 	c.OnResponse(func(r *colly.Response) {
 		log.Printf("Received response with status: %d for URL: %s", r.StatusCode, r.Request.URL)
