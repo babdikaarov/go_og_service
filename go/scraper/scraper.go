@@ -29,10 +29,16 @@ func HandleURL(urlStr string) models.OgData {
 
 	c.OnRequest(func(r *colly.Request) {
 		log.Printf("Requesting URL: %s", r.URL.String())
+		for key, value := range *r.Headers {
+			log.Printf("Request Header: %s: %s", key, value)
+		}
 	})
 
 	c.OnResponse(func(r *colly.Response) {
 		log.Printf("Received response with status: %d for URL: %s", r.StatusCode, r.Request.URL)
+		for key, value := range *r.Headers {
+			log.Printf("Response Header: %s: %s", key, value)
+		}
 	})
 
 	c.OnHTML("link[rel='icon']", func(e *colly.HTMLElement) {
