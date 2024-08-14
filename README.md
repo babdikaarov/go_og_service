@@ -1,61 +1,24 @@
-# Get started
+# Getting Started
 
-TODO:
+## With Docker
 
--  doc pending to write
-
-## deprecated!! Get started
-
-works on commit - ec36c64
+To start the application using Docker, run:
 
 ```zsh
-# Ensure Go is installed on your machine
+docker compose up
+```
 
-git clone https://github.com/babdikaarov/go_og_service.git .
+You can then access the application at [localhost](http://localhost).
 
-cd go_og_service
+## Locally
 
-# Run the service locally
+To run the application locally, navigate to the `go` directory and execute:
+
+```zsh
+cd go
 go run main.go
-
-# Test case
-curl "http://localhost:8080/og?url=asd,asdfsdf"
-
-# Expected response:
-[
-    {
-        "title": "Error",
-        "description": "Try to check the URL OG is available or assign manually",
-        "image": "null",
-        "original_url": "asd"
-    },
-    {
-        "title": "Error",
-        "description": "Try to check the URL OG is available or assign manually",
-        "image": "null",
-        "original_url": "asdfsdf"
-    }
-]
-
-curl "https://youtu.be/0RKpf3rK57I?si=pdehNIEfRnj2sB3q"
-
-# Expected response:
-[
-    {
-        "title": "Hugo in 100 Seconds",
-        "description": "Hugo is an extremely fast static site generator for building websites with markdown. It is written in the Go programming language and provides a large collection of features.",
-        "image": "https://i.ytimg.com/vi/0RKpf3rK57I/maxresdefault.jpg",
-        "original_url": "https://youtu.be/0RKpf3rK57I?si=pdehNIEfRnj2sB3q"
-    }
-]
-
 ```
 
-## demo api
+## License and Liability Disclaimer
 
-```go
-url := "https://go-og-service.onrender.com"
-getPath := "/og"
-params := "url" // Multiple values should be comma-separated
-example := `https://go-og-service.onrender.com/og?url=https://youtu.be/0RKpf3rK57I?si=pdehNIEfRnj2sB3q,http://localhost:8080/og?url=asd,asdfsdf`
-```
+This project is licensed under the MIT License. The owner of this repository does not hold any liability for misuse or any issues arising from the use of this software.
