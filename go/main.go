@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-    // gin.SetMode(gin.ReleaseMode) // production mode
+    gin.SetMode(gin.ReleaseMode) // production mode
      if err := godotenv.Load(); err != nil {
         log.Fatalf("Error loading .env file")
     }
