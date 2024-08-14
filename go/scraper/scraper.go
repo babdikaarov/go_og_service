@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"strings"
 
+	"github.com/PuerkitoBio/goquery"
 	"github.com/gocolly/colly/v2"
 )
 
@@ -26,17 +27,14 @@ func HandleURL(urlStr string) models.OgData {
 	}
 
 	c := colly.NewCollector(colly.UserAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36"))
-	// 	c.OnHTML("body", func(e *colly.HTMLElement) {
-	// 	// Iterate over all <script> tags and ignore them
-	// 	e.DOM.Find("script").Each(func(i int, s *goquery.Selection) {
-	// 		// Here you can choose to log or process <script> content if needed, or just ignore it
-	// 		s.Remove() // Remove the <script> tag from the DOM
-	// 	})
+		c.OnHTML("body", func(e *colly.HTMLElement) {
+		// Iterate over all <script> tags and ignore them
+		e.DOM.Find("script").Each(func(i int, s *goquery.Selection) {
+			// Here you can choose to log or process <script> content if needed, or just ignore it
+			s.Remove() // Remove the <script> tag from the DOM
+		})
 
-	// 	// Extract data from the cleaned HTML
-	// 	content := e.Text
-	// 	fmt.Println(content)
-	// })
+	})
 	
 	c.OnRequest(func(r *colly.Request) {
 		log.Printf("Requesting URL: %s", r.URL.String())
