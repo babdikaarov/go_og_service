@@ -1,0 +1,29 @@
+services:
+   go:
+      container_name: go
+      build:
+         context: ./go
+         dockerfile: Dockerfile
+      ports:
+         - "3030:3030"
+      depends_on:
+         - nginx
+      networks:
+         - nginx_network
+
+   nginx:
+      container_name: nginx
+      image: "nginx:1.13-alpine"
+      restart: unless-stopped
+      ports:
+         - "80:80"
+         # - "443:443"
+      volumes:
+         - ./nginx/main.config/nginx.conf:/etc/nginx/nginx.conf
+         - ./nginx/conf.prod:/etc/nginx/conf.d
+         # - "/etc/letsencrypt:/etc/letsencrypt"
+      networks:
+         - nginx_network
+networks:
+   nginx_network:
+      driver: bridge

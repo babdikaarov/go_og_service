@@ -1,5 +1,13 @@
 # Get started
 
+TODO:
+
+-  doc pending to write
+
+## deprecated!! Get started
+
+works on commit - ec36c64
+
 ```zsh
 # Ensure Go is installed on your machine
 
