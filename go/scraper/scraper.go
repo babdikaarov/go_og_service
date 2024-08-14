@@ -1,11 +1,14 @@
 package scraper
 
 import (
+	"bytes"
+	"fmt"
 	"go_og_service/models"
 	"log"
 	"net/url"
 	"strings"
 
+	"github.com/PuerkitoBio/goquery"
 	"github.com/gocolly/colly/v2"
 )
 
@@ -25,10 +28,48 @@ func HandleURL(urlStr string) models.OgData {
 		return ogData
 	}
 
-	c := colly.NewCollector(colly.UserAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36"))
+	c := colly.NewCollector(
+		colly.UserAgent(
+			"facebookexternalhit/1.1"))
+		// Define the OnHTML callback for handling the HTML content
+	c.OnHTML("head", func(e *colly.HTMLElement) {
+		// Convert []byte to io.Reader
+		bodyReader := bytes.NewReader(e.Response.Body)
 
+		// Create a GoQuery document from the HTML content
+		doc, err := goquery.NewDocumentFromReader(bodyReader)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		// Iterate over meta tags and print their attributes
+		doc.Find("meta").Each(func(i int, s *goquery.Selection) {
+			name, existsName := s.Attr("name")
+			property, existsProperty := s.Attr("property")
+			content, _ := s.Attr("content")
+
+			if existsName {
+				fmt.Printf("by goquery: Meta Name: %s, Content: %s\n", name, content)
+			}
+			if existsProperty {
+				fmt.Printf("by goquery: Meta Property: %s, Content: %s\n", property, content)
+			}
+		})
+	})
+		c.OnHTML("meta", func(e *colly.HTMLElement) {
+		name := e.Attr("name")
+		property := e.Attr("property")
+		content := e.Attr("content")
+		if name != "" {
+			fmt.Printf("by coly: Meta Name: %s, Content: %s\n", name, content)
+		}
+		if property != "" {
+			fmt.Printf("by coly: Meta Property: %s, Content: %s\n", property, content)
+		}
+	})
 	// Set up the collector to only parse the <head> tag
 	c.OnHTML("head", func(e *colly.HTMLElement) {
+		
 		// Extract Open Graph meta tags
 		e.ForEach("meta[property='og:title']", func(_ int, el *colly.HTMLElement) {
 			if content := el.Attr("content"); content != "" {
@@ -116,139 +157,3 @@ func HandleURL(urlStr string) models.OgData {
 	return ogData
 }
 
-// package scraper
-
-// import (
-// 	"go_og_service/models"
-// 	"log"
-// 	"net/url"
-// 	"strings"
-
-// 	"github.com/gocolly/colly/v2"
-// )
-
-// func HandleURL(urlStr string) models.OgData {
-// 	urlStr = strings.TrimSpace(urlStr)
-
-// 	var ogData models.OgData
-// 	ogData.OriginalURL = urlStr
-
-// 	parsedURL, err := url.ParseRequestURI(urlStr)
-// 	if err != nil || parsedURL.Scheme == "" || parsedURL.Host == "" {
-// 		log.Printf("Invalid URL: %s, Error: %v", urlStr, err)
-// 		ogData.Title = "not found"
-// 		ogData.Description = "not found"
-// 		ogData.Image = "not found"
-// 		ogData.Icon = "not found"
-// 		return ogData
-// 	}
-
-// 	c := colly.NewCollector(colly.UserAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36"))
-	
-// 	c.OnRequest(func(r *colly.Request) {
-// 		log.Printf("Requesting URL: %s", r.URL.String())
-// 		log.Println("Request Headers:", r.Headers)
-// 		log.Println("Request User-Agent:", r.Headers.Get("User-Agent"))
-// 		for key, value := range *r.Headers {
-// 			log.Printf("Request Header: %s: %s", key, value)
-// 		}
-// 	})
-
-
-// 	c.OnResponse(func(r *colly.Response) {
-// 		log.Printf("Received response with status: %d for URL: %s", r.StatusCode, r.Request.URL)
-// 		for key, value := range *r.Headers {
-// 			log.Printf("Response Header: %s: %s", key, value)
-// 		}
-// 	})
-
-// 	c.OnHTML("link[rel='icon']", func(e *colly.HTMLElement) {
-// 		icon := e.Attr("href")
-// 		log.Printf("Found icon href (rel='icon'): %s", icon)
-// 		if icon != "" {
-// 			if !strings.HasPrefix(icon, "http") {
-// 				if baseURL, err := e.Request.URL.Parse(icon); err == nil {
-// 					icon = baseURL.String()
-// 				}
-// 			}
-// 			ogData.Icon = icon
-// 		}
-// 	})
-
-// 	c.OnHTML("link[rel='shortcut icon']", func(e *colly.HTMLElement) {
-// 		icon := e.Attr("href")
-// 		if ogData.Icon == "" && icon != "" {
-// 			log.Printf("Found icon href (rel='shortcut icon'): %s", icon)
-// 			if !strings.HasPrefix(icon, "http") {
-// 				if baseURL, err := e.Request.URL.Parse(icon); err == nil {
-// 					icon = baseURL.String()
-// 				}
-// 			}
-// 			ogData.Icon = icon
-// 		}
-// 	})
-
-// 	c.OnHTML("link[href*='favicon']", func(e *colly.HTMLElement) {
-// 		icon := e.Attr("href")
-// 		if ogData.Icon == "" && icon != "" {
-// 			log.Printf("Found favicon href: %s", icon)
-// 			if !strings.HasPrefix(icon, "http") {
-// 				if baseURL, err := e.Request.URL.Parse(icon); err == nil {
-// 					icon = baseURL.String()
-// 				}
-// 			}
-// 			ogData.Icon = icon
-// 		}
-// 	})
-
-// 	c.OnHTML("meta[property='og:title']", func(e *colly.HTMLElement) {
-// 		if content := e.Attr("content"); content != "" {
-// 			ogData.Title = content
-// 		}
-// 	})
-
-// 	c.OnHTML("meta[property='og:description']", func(e *colly.HTMLElement) {
-// 		if content := e.Attr("content"); content != "" {
-// 			ogData.Description = content
-// 		}
-// 	})
-
-// 	c.OnHTML("meta[property='og:image']", func(e *colly.HTMLElement) {
-// 		if content := e.Attr("content"); content != "" {
-// 			ogData.Image = content
-// 		}
-// 	})
-// 	c.OnHTML("meta[property='twitter:image']", func(e *colly.HTMLElement) {
-// 		 if ogData.Image == "" { 
-// 			if content := e.Attr("content"); content != "" {
-// 				ogData.Image = content
-// 			}
-// 		}
-// 	})
-
-// 	c.OnHTML("meta[property='twitter:description']", func(e *colly.HTMLElement) {
-//         if ogData.Description == "" { // Only set if not already set
-//             if content := e.Attr("content"); content != "" {
-//                 ogData.Description = content
-//             }
-//         }
-//     })
-
-//     c.OnHTML("meta[property='twitter:title']", func(e *colly.HTMLElement) {
-//         if ogData.Title == "" { // Only set if not already set
-//             ogData.Title = e.Text
-//         }
-//     })
-
-// 	err = c.Visit(urlStr)
-// 	if err != nil {
-// 		log.Printf("Error visiting URL %s: %v", urlStr, err)
-// 		ogData.Title = "not found"
-// 		ogData.Description = "not found"
-// 		ogData.Image = "not found"
-// 	}
-
-// 	log.Printf("Scraped Open Graph data: %+v", ogData)
-
-// 	return ogData
-// }
