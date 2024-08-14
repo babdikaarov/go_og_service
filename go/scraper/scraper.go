@@ -101,8 +101,15 @@ func HandleURL(urlStr string) models.OgData {
 			ogData.Image = content
 		}
 	})
+	c.OnHTML("meta[property='twitter:image']", func(e *colly.HTMLElement) {
+		 if ogData.Image == "" { 
+			if content := e.Attr("content"); content != "" {
+				ogData.Image = content
+			}
+		}
+	})
 
-	c.OnHTML("meta[name='description']", func(e *colly.HTMLElement) {
+	c.OnHTML("meta[property='twitter:description']", func(e *colly.HTMLElement) {
         if ogData.Description == "" { // Only set if not already set
             if content := e.Attr("content"); content != "" {
                 ogData.Description = content
@@ -110,7 +117,7 @@ func HandleURL(urlStr string) models.OgData {
         }
     })
 
-    c.OnHTML("title", func(e *colly.HTMLElement) {
+    c.OnHTML("meta[property='twitter:title']", func(e *colly.HTMLElement) {
         if ogData.Title == "" { // Only set if not already set
             ogData.Title = e.Text
         }
