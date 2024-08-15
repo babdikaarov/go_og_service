@@ -10,7 +10,7 @@ import (
 
 // ServeForm serves the HTML form.
 func ServeForm(c *gin.Context) {
-	c.HTML(http.StatusOK, "form.html", nil)
+	c.HTML(http.StatusOK, "index.html", nil)
 }
 
 // HandleFormSubmission processes form submissions and redirects to the /og endpoint.

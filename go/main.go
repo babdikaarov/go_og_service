@@ -12,6 +12,8 @@ import (
 )
 
 func main() {
+
+
     gin.SetMode(gin.ReleaseMode) // production mode
      if err := godotenv.Load(); err != nil {
         log.Fatalf("Error loading .env file")
@@ -22,7 +24,9 @@ func main() {
         port = ":3030" // Default port
     }
     r := gin.Default()
-	r.LoadHTMLGlob("*.html")
+    r.Static("/static", "./static")
+    r.StaticFile("/favicon.ico", "./static/favicon.ico")
+    r.LoadHTMLGlob("templates/*")
     config := cors.DefaultConfig()
     config.AllowAllOrigins = true
     config.AllowMethods = []string{"GET", "POST"}
@@ -33,7 +37,7 @@ func main() {
     r.Use(cors.New(config))
 
     r.SetTrustedProxies([]string{"*"})
-
+   
     r.GET("/", handler.ServeForm)          // Serve the form
     r.POST("/generate", handler.HandleFormSubmission) // Handle form submission
     r.GET("/og", handler.GetOgData)
