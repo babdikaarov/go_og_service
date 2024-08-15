@@ -12,8 +12,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// GetOgData handles the request and scrapes the Open Graph data
-func GetOgData(context *gin.Context) {
+// GenerateOgData handles the request and scrapes the Open Graph data
+func GenerateOgData(context *gin.Context) {
 	// Ensure that only GET requests are allowed
 	if context.Request.Method != http.MethodGet {
 		context.JSON(http.StatusMethodNotAllowed, gin.H{"error": "Method not allowed"})
@@ -93,4 +93,36 @@ func GetOgData(context *gin.Context) {
 
 	// Write the ZIP file to the response
 	context.Data(http.StatusOK, "application/zip", buf.Bytes())
+}
+func GetOgData(context *gin.Context) {
+	// Ensure that only GET requests are allowed
+	if context.Request.Method != http.MethodGet {
+		context.JSON(http.StatusMethodNotAllowed, gin.H{"error": "Method not allowed"})
+		return
+	}
+
+	// Get URL parameter
+	urlParam := context.Query("url")
+
+	// Check if URL parameter is empty
+	if urlParam == "" {
+		context.JSON(http.StatusNotFound, gin.H{"error": "No URL parameter found"})
+		return
+	}
+
+	// Split the URL parameter into multiple URLs if it's a comma-separated list
+	urls := strings.Split(urlParam, ",")
+
+	var ogDataList []models.OgData
+
+	// Process each URL
+	for _, urlStr := range urls {
+		ogData := scraper.HandleURL(urlStr)
+		ogDataList = append(ogDataList, ogData)
+	}
+
+	// Return the Open Graph data as JSON
+	context.JSON(http.StatusOK, gin.H{
+		"data": ogDataList,
+	})
 }

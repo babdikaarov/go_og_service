@@ -12,24 +12,32 @@ import (
 func ServeForm(c *gin.Context) {
 	c.HTML(http.StatusOK, "index.html", nil)
 }
-
-// HandleFormSubmission processes form submissions and redirects to the /og endpoint.
 func HandleFormSubmission(c *gin.Context) {
 	links := c.PostForm("links")
 	filename := c.PostForm("filename")
+	outputType := c.PostForm("outputType")
 
 	// Clean up links and filename
 	links = strings.TrimSpace(links)
 	filename = strings.TrimSpace(filename)
 
-	if links == "" || filename == "" {
+	if links == "" || (outputType == "zip" && filename == "") {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Links and filename cannot be empty"})
 		return
 	}
 
-	// Construct the URL for the /og endpoint
-	ogEndpoint := "/og?url=" + url.QueryEscape(links) + "&filename=" + url.QueryEscape(filename)
+	var ogEndpoint string
+	if outputType == "zip" {
+		// Construct the URL for the /zip endpoint
+		ogEndpoint = "/zip?url=" + url.QueryEscape(links) + "&filename=" + url.QueryEscape(filename)
+	} else if outputType == "json" {
+		// Construct the URL for the /json endpoint
+		ogEndpoint = "/json?url=" + url.QueryEscape(links)
+	} else {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid output type"})
+		return
+	}
 
-	// Redirect to the /og endpoint to handle ZIP file creation
+	// Redirect to the appropriate endpoint
 	c.Redirect(http.StatusSeeOther, ogEndpoint)
 }

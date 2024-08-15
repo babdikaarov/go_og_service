@@ -3,15 +3,15 @@
    <head>
       <meta charset="UTF-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <title>Generate ZIP File</title>
+      <title>Generate ZIP File or JSON Data</title>
       <meta
          property="description"
-         content="Easily generate ZIP files containing Open Graph data from your URLs. Try my service to get a neatly packaged ZIP file ready for your needs."
+         content="Easily generate ZIP files or retrieve JSON data containing Open Graph data from your URLs. Try my service to get what you need."
       />
-      <meta property="og:title" content="Generate ZIP File with Open Graph Data" />
+      <meta property="og:title" content="Generate ZIP File or Retrieve JSON Data with Open Graph Data" />
       <meta
          property="og:description"
-         content="Easily generate ZIP files containing Open Graph data from your URLs. Try my service to get a neatly packaged ZIP file ready for your needs."
+         content="Easily generate ZIP files or retrieve JSON data containing Open Graph data from your URLs. Try my service to get what you need."
       />
       <meta property="og:image" content="https://babdikaarov.home.kg/static/images/og-screenshot.png" />
       <meta property="og:image:type" content="image/png" />
@@ -80,18 +80,90 @@
          button:hover {
             background-color: #0056b3;
          }
+         .result {
+            overflow: scroll;
+            height: 400px;
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: #333;
+            border-radius: 4px;
+            white-space: pre-wrap;
+         }
       </style>
    </head>
    <body>
       <div class="container">
-         <h1>Generate ZIP File with Open Graph Data</h1>
-         <form action="/generate" method="post">
+         <h1>Generate ZIP File or Retrieve JSON Data</h1>
+         <form id="data-form" method="post">
             <label for="links">Enter URLs (comma separated):</label>
             <textarea id="links" name="links" rows="5"></textarea>
             <label for="filename">File Name:</label>
             <input type="text" id="filename" name="filename" />
-            <button type="submit">Generate ZIP</button>
+            <div>
+               <input type="radio" id="zip" name="outputType" value="zip" checked />
+               <label for="zip">Generate ZIP File</label>
+               <input type="radio" id="json" name="outputType" value="json" />
+               <label for="json">Retrieve JSON Data</label>
+            </div>
+            <button type="submit">Submit</button>
          </form>
+         <div id="result" class="result" style="display: none"></div>
       </div>
+
+      <script>
+         document.getElementById("data-form").addEventListener("submit", function (event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            const outputType = formData.get("outputType");
+            const links = formData.get("links");
+            const filename = formData.get("filename");
+            const actionUrl = outputType === "zip" ? "/zip" : "/json";
+
+            // Construct query parameters
+            const queryParams = new URLSearchParams({
+               url: links,
+               filename: filename,
+            }).toString();
+
+            // Set URL with query parameters
+            const urlWithParams = `${actionUrl}?${queryParams}`;
+
+            fetch(urlWithParams)
+               .then((response) => {
+                  if (response.ok) {
+                     if (outputType === "json") {
+                        return response.json();
+                     } else {
+                        // For ZIP file, handle as blob
+                        return response.blob();
+                     }
+                  } else {
+                     throw new Error("Network response was not ok.");
+                  }
+               })
+               .then((data) => {
+                  if (outputType === "json") {
+                     // Display JSON data
+                     const resultDiv = document.getElementById("result");
+                     resultDiv.textContent = JSON.stringify(data, null, 2);
+                     resultDiv.style.display = "block";
+                  } else {
+                     // Handle file download
+                     const url = window.URL.createObjectURL(data);
+                     const a = document.createElement("a");
+                     a.href = url;
+                     a.download = filename + ".zip"; // Set default file name for ZIP
+                     document.body.appendChild(a);
+                     a.click();
+                     a.remove();
+                     window.URL.revokeObjectURL(url);
+                  }
+               })
+               .catch((error) => {
+                  console.error("Error:", error);
+               });
+         });
+      </script>
    </body>
 </html>

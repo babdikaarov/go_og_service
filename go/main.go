@@ -14,7 +14,7 @@ import (
 func main() {
 
 
-    gin.SetMode(gin.ReleaseMode) // production mode
+    // gin.SetMode(gin.ReleaseMode) // production mode
      if err := godotenv.Load(); err != nil {
         log.Fatalf("Error loading .env file")
     }
@@ -40,7 +40,8 @@ func main() {
    
     r.GET("/", handler.ServeForm)          // Serve the form
     r.POST("/generate", handler.HandleFormSubmission) // Handle form submission
-    r.GET("/og", handler.GetOgData)
+    r.GET("/zip", handler.GenerateOgData)
+    r.GET("/json", handler.GetOgData)
     r.Run(port)
    
 }
