@@ -1,23 +1,29 @@
-# Stage 1: Build the Go application
-FROM golang AS builder
+# Start with a base Go image
+FROM golang:alpine as builder
 
-# Set the Current Working Directory inside the container
 WORKDIR /app
 
-# Copy go mod and sum files
+RUN apk add --no-cache git
+RUN go install github.com/swaggo/swag/cmd/swag@latest
+
 COPY go.mod go.sum ./
 
-# Download all dependencies. Dependencies will be cached if the go.mod and go.sum files are not changed
 RUN go mod download
-
-# Copy the source code into the container
 COPY . .
 
-EXPOSE 3030
-# set hostname to localhost
-ENV HOSTNAME="0.0.0.0"
-# Build the Go application
+RUN swag init
+
+
 RUN go build -o main .
 
-# Run the Go application
+FROM alpine:latest
+
+WORKDIR /root/
+
+COPY --from=builder /app/main .
+COPY --from=builder /app/docs ./docs
+COPY --from=builder /app/templates ./templates
+
+EXPOSE 3030
+
 CMD ["./main"]
