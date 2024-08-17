@@ -135,7 +135,7 @@
             const outputType = formData.get("outputType");
             const links = formData.get("links");
             const filename = formData.get("filename");
-            const actionUrl = outputType === "zip" ? "/zip" : "/json";
+            const actionUrl = outputType === "zip" ? "/api/v1/zip" : "/api/v1/json";
 
             // Construct query parameters
             const queryParams = new URLSearchParams({
