@@ -24,12 +24,12 @@ import (
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 // @termsOfService http://swagger.io/terms/
-// @host https://babdikaarov.home.kg
+// @host babdikaarov.home.kg
 // @BasePath /api/v1
 func main() {
 
 
-    gin.SetMode(gin.ReleaseMode) // production mode
+    // gin.SetMode(gin.ReleaseMode) // production mode
     if err := godotenv.Load(); err != nil {
         log.Println("Error loading .env file setting Default port :3030")
     }
