@@ -1,0 +1,92 @@
+basePath: /api/v1
+definitions:
+  models.Data:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/models.OgData'
+        type: array
+    type: object
+  models.OgData:
+    properties:
+      description:
+        type: string
+      icon:
+        type: string
+      image:
+        type: string
+      original_url:
+        type: string
+      title:
+        type: string
+    type: object
+host: localhost:3030
+info:
+  contact:
+    email: babdikaarov@gmail.com
+    name: Beksultan Abdikaarov
+    url: https://github.com/babdikaarov
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  version: "1.0"
+paths:
+  /json:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves OG data from the provided URLs and returns it as JSON.
+      parameters:
+      - description: URL to scrape
+        example: '"https://example.com"'
+        in: query
+        name: url
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: data
+          schema:
+            $ref: '#/definitions/models.Data'
+        "404":
+          description: No URL parameter found
+        "500":
+          description: Failed to generate JSON
+      summary: Get Open Graph Data as JSON
+      tags:
+      - OGData
+  /zip:
+    get:
+      consumes:
+      - application/json
+      description: Scrapes OG data from the provided URLs and returns it as a ZIP
+        file.
+      parameters:
+      - description: URL to scrape
+        example: '"https://example.com"'
+        in: query
+        name: url
+        required: true
+        type: string
+      - description: 'Filename for the ZIP file. default: ogdata.zip'
+        in: query
+        name: filename
+        type: string
+      produces:
+      - aplication/zip
+      responses:
+        "200":
+          description: ogdata.zip
+          schema:
+            type: file
+        "404":
+          description: No URL parameter found
+        "500":
+          description: Failed to generate ZIP
+      summary: Get Open Graph Data as ZIP file
+      tags:
+      - OGData
+swagger: "2.0"

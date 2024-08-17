@@ -6,11 +6,26 @@ import (
 	"os"
 	"time"
 
+	_ "go_og_service/docs" // Import the generated docs
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
+// @Open graph data generator
+// @version 1.0
+// @Scrap any Open Graph data .
+// @contact.name Beksultan Abdikaarov
+// @contact.email babdikaarov@gmail.com
+// @contact.url https://github.com/babdikaarov
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+// @termsOfService http://swagger.io/terms/
+// @host https://babdikaarov.home.kg
+// @BasePath /api/v1
 func main() {
 
 
@@ -39,9 +54,12 @@ func main() {
     r.SetTrustedProxies([]string{"*"})
    
     r.GET("/", handler.ServeForm)          // Serve the form
+    // Swagger endpoint
+    r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
     r.POST("/generate", handler.HandleFormSubmission) // Handle form submission
-    r.GET("/zip", handler.GenerateOgData)
-    r.GET("/json", handler.GetOgData)
+    r.GET("/api/v1/zip", handler.GenerateOgData)
+    r.GET("/api/v1/json", handler.GetOgData)
     r.Run(port)
    
 }

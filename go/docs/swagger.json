@@ -1,0 +1,137 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {
+            "name": "Beksultan Abdikaarov",
+            "url": "https://github.com/babdikaarov",
+            "email": "babdikaarov@gmail.com"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost:3030",
+    "basePath": "/api/v1",
+    "paths": {
+        "/json": {
+            "get": {
+                "description": "Retrieves OG data from the provided URLs and returns it as JSON.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "OGData"
+                ],
+                "summary": "Get Open Graph Data as JSON",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "\"https://example.com\"",
+                        "description": "URL to scrape",
+                        "name": "url",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "data",
+                        "schema": {
+                            "$ref": "#/definitions/models.Data"
+                        }
+                    },
+                    "404": {
+                        "description": "No URL parameter found"
+                    },
+                    "500": {
+                        "description": "Failed to generate JSON"
+                    }
+                }
+            }
+        },
+        "/zip": {
+            "get": {
+                "description": "Scrapes OG data from the provided URLs and returns it as a ZIP file.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "aplication/zip"
+                ],
+                "tags": [
+                    "OGData"
+                ],
+                "summary": "Get Open Graph Data as ZIP file",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "\"https://example.com\"",
+                        "description": "URL to scrape",
+                        "name": "url",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filename for the ZIP file. default: ogdata.zip",
+                        "name": "filename",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ogdata.zip",
+                        "schema": {
+                            "type": "file"
+                        }
+                    },
+                    "404": {
+                        "description": "No URL parameter found"
+                    },
+                    "500": {
+                        "description": "Failed to generate ZIP"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "models.Data": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.OgData"
+                    }
+                }
+            }
+        },
+        "models.OgData": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "icon": {
+                    "type": "string"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "original_url": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

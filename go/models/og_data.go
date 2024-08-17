@@ -8,3 +8,7 @@ type OgData struct {
     Icon        string `json:"icon"`
     OriginalURL string `json:"original_url"`
 }
+
+type Data struct {
+     Data []OgData `json:"data"`
+}

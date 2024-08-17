@@ -12,7 +12,18 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// GenerateOgData handles the request and scrapes the Open Graph data
+// /zip retrieves the OG data as Zip file
+// @Summary Get Open Graph Data as ZIP file
+// @Description Scrapes OG data from the provided URLs and returns it as a ZIP file.
+// @Tags OGData
+// @Accept  json
+// @Produce  aplication/zip
+// @Param url query string true "URL to scrape" example("https://example.com")
+// @Param filename query string false "Filename for the ZIP file. default: ogdata.zip"
+// @Success 200 {file} file "ogdata.zip"
+// @Failure 404  "No URL parameter found"
+// @Failure 500  "Failed to generate ZIP"
+// @Router /zip [get]
 func GenerateOgData(context *gin.Context) {
 	// Ensure that only GET requests are allowed
 	if context.Request.Method != http.MethodGet {
@@ -94,6 +105,20 @@ func GenerateOgData(context *gin.Context) {
 	// Write the ZIP file to the response
 	context.Data(http.StatusOK, "application/zip", buf.Bytes())
 }
+
+
+
+// /json retrieves the OG data as JSON
+// @Summary Get Open Graph Data as JSON
+// @Description Retrieves OG data from the provided URLs and returns it as JSON.
+// @Tags OGData
+// @Accept  json
+// @Produce  json
+// @Param url query string true "URL to scrape" example("https://example.com")
+// @Success 200 {object} models.Data "data"
+// @Failure 404 "No URL parameter found"
+// @Failure 500 "Failed to generate JSON"
+// @Router /json [get]
 func GetOgData(context *gin.Context) {
 	// Ensure that only GET requests are allowed
 	if context.Request.Method != http.MethodGet {

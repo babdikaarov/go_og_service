@@ -25,7 +25,7 @@
             background: #1c1c1c;
          }
          body {
-            height: 100vh;
+            height: 100dvh;
             margin: 0;
             padding: 0;
             background: linear-gradient(180deg, #1c1c1c 20%, #ffffff);
@@ -89,9 +89,26 @@
             border-radius: 4px;
             white-space: pre-wrap;
          }
+         .swagger {
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            color: green;
+            position: absolute;
+            top: 0;
+            right: 0;
+            margin: 3rem;
+            text-decoration: none;
+            padding: 1rem;
+            border: 1px solid #444;
+            border-radius: 1rem;
+            transition: scale 0.1s linear;
+         }
+         .swagger:hover {
+            scale: 1.2;
+         }
       </style>
    </head>
    <body>
+      <a href="/swagger/index.html" target="_blank" class="swagger">swagger docs</a>
       <div class="container">
          <h1>Generate ZIP File or Retrieve JSON Data</h1>
          <form id="data-form" method="post">

@@ -29,10 +29,10 @@ func HandleFormSubmission(c *gin.Context) {
 	var ogEndpoint string
 	if outputType == "zip" {
 		// Construct the URL for the /zip endpoint
-		ogEndpoint = "/zip?url=" + url.QueryEscape(links) + "&filename=" + url.QueryEscape(filename)
+		ogEndpoint = "/api/v1/zip?url=" + url.QueryEscape(links) + "&filename=" + url.QueryEscape(filename)
 	} else if outputType == "json" {
 		// Construct the URL for the /json endpoint
-		ogEndpoint = "/json?url=" + url.QueryEscape(links)
+		ogEndpoint = "/api/v1/json?url=" + url.QueryEscape(links)
 	} else {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid output type"})
 		return
