@@ -29,7 +29,7 @@ import (
 func main() {
 
 
-    // gin.SetMode(gin.ReleaseMode) // production mode
+    gin.SetMode(gin.ReleaseMode) // production mode
     if err := godotenv.Load(); err != nil {
         log.Println("Error loading .env file setting Default port :3030")
     }

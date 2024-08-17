@@ -26,25 +26,21 @@
          }
          body {
             height: 100dvh;
+            background: linear-gradient(180deg, #1c1c1c 20%, #ffffff);
             margin: 0;
             padding: 0;
-            background: linear-gradient(180deg, #1c1c1c 20%, #ffffff);
             color: #fff;
             font-family: Arial, sans-serif;
-            overflow: auto;
             box-sizing: border-box;
-         }
-         body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
          }
          .container {
             padding: 2rem;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-            width: 100%;
-            max-width: 600px;
+            /* width: 100%; */
+            min-height: 100%;
+            flex: 1;
+            min-width: 0;
          }
          h1 {
             margin-top: 0;
@@ -82,9 +78,8 @@
          }
          .result {
             overflow: scroll;
-            height: 400px;
-            margin-top: 1rem;
-            padding: 1rem;
+            height: 100%;
+            width: 100%;
             background-color: #333;
             border-radius: 4px;
             white-space: pre-wrap;
@@ -105,27 +100,55 @@
          .swagger:hover {
             scale: 1.2;
          }
+
+         section {
+            display: flex;
+            margin: auto;
+            gap: 1rem;
+            width: 100%;
+            height: 620px;
+            padding: 2rem;
+         }
+         main {
+            height: 100%;
+            display: flex;
+         }
+         textarea {
+            resize: none;
+         }
       </style>
    </head>
    <body>
-      <a href="/swagger/index.html" target="_blank" class="swagger">swagger docs</a>
-      <div class="container">
-         <h1>Generate ZIP File or Retrieve JSON Data</h1>
-         <form id="data-form" method="post">
-            <label for="links">Enter URLs (comma separated):</label>
-            <textarea id="links" name="links" rows="5"></textarea>
-            <label for="filename">File Name:</label>
-            <input type="text" id="filename" name="filename" />
-            <div>
-               <input type="radio" id="zip" name="outputType" value="zip" checked />
-               <label for="zip">Generate ZIP File</label>
-               <input type="radio" id="json" name="outputType" value="json" />
-               <label for="json">Retrieve JSON Data</label>
+      <header>
+         <a href="/swagger/index.html" target="_blank" class="swagger">swagger docs</a>
+      </header>
+      <main>
+         <section>
+            <div class="container">
+               <h1>Generate ZIP File or Retrieve JSON Data</h1>
+               <form id="data-form" method="post">
+                  <label for="links">Enter URLs (comma separated):*</label>
+                  <textarea id="links" name="links" rows="20"></textarea>
+                  <label for="filename">File Name:(optional)</label>
+                  <input type="text" id="filename" name="filename" />
+                  <div>
+                     <label for="zip">
+                        <input type="radio" id="zip" name="outputType" value="zip" checked />
+                        Generate ZIP File
+                     </label>
+                     <label for="json">
+                        <input type="radio" id="json" name="outputType" value="json" />
+                        Retrieve JSON Data
+                     </label>
+                  </div>
+                  <button type="submit">Submit</button>
+               </form>
             </div>
-            <button type="submit">Submit</button>
-         </form>
-         <div id="result" class="result" style="display: none"></div>
-      </div>
+            <div class="container">
+               <div id="result" class="result"></div>
+            </div>
+         </section>
+      </main>
 
       <script>
          document.getElementById("data-form").addEventListener("submit", function (event) {
@@ -164,7 +187,6 @@
                      // Display JSON data
                      const resultDiv = document.getElementById("result");
                      resultDiv.textContent = JSON.stringify(data, null, 2);
-                     resultDiv.style.display = "block";
                   } else {
                      // Handle file download
                      const url = window.URL.createObjectURL(data);

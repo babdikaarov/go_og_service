@@ -4,6 +4,7 @@ import (
 	"archive/zip"
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"go_og_service/models"
 	"go_og_service/scraper"
 	"net/http"
@@ -31,7 +32,7 @@ func GenerateOgData(context *gin.Context) {
 		return
 	}
 
-	// Get URL parameter
+	// Get parameters
 	urlParam := context.Query("url")
 	folderParam := context.Query("filename")
 
@@ -40,18 +41,23 @@ func GenerateOgData(context *gin.Context) {
 		context.JSON(http.StatusNotFound, gin.H{"error": "No URL parameter found"})
 		return
 	}
+	// Split the URL parameter into multiple URLs if it's a comma-separated list
+	urls := strings.Split(urlParam, ",")
 
 	// Format the folderParam: convert to lowercase and replace spaces with underscores
 	formattedFolderParam := strings.ToLower(folderParam)
 	formattedFolderParam = strings.ReplaceAll(formattedFolderParam, " ", "_")
 
-	// Split the URL parameter into multiple URLs if it's a comma-separated list
-	urls := strings.Split(urlParam, ",")
 
 	var ogDataList []models.OgData
 
 	// Process each URL
 	for _, urlStr := range urls {
+		fmt.Printf("Processing URL: %s\n", urlStr)
+		if urlStr == "" {
+			continue
+		}
+		fmt.Printf("by validator %s\n", urlStr)
 		ogData := scraper.HandleURL(urlStr)
 		ogDataList = append(ogDataList, ogData)
 	}
@@ -142,6 +148,13 @@ func GetOgData(context *gin.Context) {
 
 	// Process each URL
 	for _, urlStr := range urls {
+		fmt.Printf("Processing URL: %s\n", urlStr)
+		urlStr = strings.TrimSpace(urlStr)
+		if urlStr == "" {
+			fmt.Printf("Empty URL: %s\n", urlStr)
+			continue
+		}
+		fmt.Printf("by validator %s\n", urlStr)
 		ogData := scraper.HandleURL(urlStr)
 		ogDataList = append(ogDataList, ogData)
 	}

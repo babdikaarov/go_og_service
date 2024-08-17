@@ -12,11 +12,30 @@ import (
 	"github.com/gocolly/colly/v2"
 )
 
+func isValidURL(urlStr string) bool {
+	u, err := url.Parse(urlStr)
+	if err != nil || u.Scheme == "" || u.Host == "" {
+		return false
+	}
+	return true
+}
+
 func HandleURL(urlStr string) models.OgData {
-	urlStr = strings.TrimSpace(urlStr)
+	// urlStr = strings.TrimSpace(urlStr)
 
 	var ogData models.OgData
-	ogData.OriginalURL = urlStr
+
+	if isValidURL(urlStr) {
+		ogData.OriginalURL = urlStr
+		} else {
+			log.Printf("Invalid URL %s", urlStr)
+			ogData.Title = "not valid url"
+			ogData.Description = "not valid url"
+			ogData.Image = "not valid url"
+			ogData.Icon = "not valid url"
+			ogData.OriginalURL = urlStr
+		return ogData
+	}
 
 	parsedURL, err := url.ParseRequestURI(urlStr)
 	if err != nil || parsedURL.Scheme == "" || parsedURL.Host == "" {
