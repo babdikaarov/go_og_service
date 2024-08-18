@@ -39,7 +39,7 @@ document.getElementById("data-form").addEventListener("submit", function (event)
             resultDiv.innerHTML = JSON.stringify(data);
             resultDiv.dataset.jsonData = JSON.stringify(data); // Store data for later use
             handleViewToggle(); // Update view based on checkbox
-        } else {
+         } else {
             // Handle file download
             const url = window.URL.createObjectURL(data);
             const a = document.createElement("a");
@@ -57,9 +57,8 @@ document.getElementById("data-form").addEventListener("submit", function (event)
 });
 
 document.addEventListener("DOMContentLoaded", function () {
-   
    const viewToggle = document.getElementById("viewToggle");
-   
+
    // Add event listener for checkbox change
    viewToggle.addEventListener("change", handleViewToggle);
 });
