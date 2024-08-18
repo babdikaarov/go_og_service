@@ -20,103 +20,7 @@
       <meta property="og:url" content="https://babdikaarov.home.kg" />
       <meta property="og:type" content="website" />
       <meta name="author" content="Beksultan" />
-      <style>
-         html {
-            background: #1c1c1c;
-         }
-         body {
-            height: 100dvh;
-            background: linear-gradient(180deg, #1c1c1c 20%, #ffffff);
-            margin: 0;
-            padding: 0;
-            color: #fff;
-            font-family: Arial, sans-serif;
-            box-sizing: border-box;
-         }
-         .container {
-            padding: 2rem;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-            /* width: 100%; */
-            min-height: 100%;
-            flex: 1;
-            min-width: 0;
-         }
-         h1 {
-            margin-top: 0;
-            font-size: 1.5rem;
-         }
-         label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: bold;
-         }
-         textarea,
-         input[type="text"] {
-            width: calc(100% - 2rem);
-            padding: 0.5rem;
-            border: 1px solid #444;
-            border-radius: 4px;
-            margin-bottom: 1rem;
-            background-color: #333;
-            color: #fff;
-         }
-         textarea {
-            resize: vertical;
-         }
-         button {
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 4px;
-            background-color: #007bff;
-            color: #fff;
-            font-size: 1rem;
-            cursor: pointer;
-         }
-         button:hover {
-            background-color: #0056b3;
-         }
-         .result {
-            overflow: scroll;
-            height: 100%;
-            width: 100%;
-            background-color: #333;
-            border-radius: 4px;
-            white-space: pre-wrap;
-         }
-         .swagger {
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-            color: green;
-            position: absolute;
-            top: 0;
-            right: 0;
-            margin: 3rem;
-            text-decoration: none;
-            padding: 1rem;
-            border: 1px solid #444;
-            border-radius: 1rem;
-            transition: scale 0.1s linear;
-         }
-         .swagger:hover {
-            scale: 1.2;
-         }
-
-         section {
-            display: flex;
-            margin: auto;
-            gap: 1rem;
-            width: 100%;
-            height: 620px;
-            padding: 2rem;
-         }
-         main {
-            height: 100%;
-            display: flex;
-         }
-         textarea {
-            resize: none;
-         }
-      </style>
+      <link rel="stylesheet" href="/static/css/style.css" />
    </head>
    <body>
       <header>
@@ -128,16 +32,16 @@
                <h1>Generate ZIP File or Retrieve JSON Data</h1>
                <form id="data-form" method="post">
                   <label for="links">Enter URLs (comma separated):*</label>
-                  <textarea id="links" name="links" rows="20"></textarea>
+                  <textarea id="links" name="links" rows="15"></textarea>
                   <label for="filename">File Name:(optional)</label>
                   <input type="text" id="filename" name="filename" />
                   <div>
                      <label for="zip">
-                        <input type="radio" id="zip" name="outputType" value="zip" checked />
+                        <input type="radio" id="zip" name="outputType" value="zip" />
                         Generate ZIP File
                      </label>
                      <label for="json">
-                        <input type="radio" id="json" name="outputType" value="json" />
+                        <input type="radio" id="json" name="outputType" value="json" checked />
                         Retrieve JSON Data
                      </label>
                   </div>
@@ -145,64 +49,16 @@
                </form>
             </div>
             <div class="container">
-               <div id="result" class="result"></div>
+               <div>
+                  <label for="viewToggle"> <input type="checkbox" id="viewToggle" /> Show raw json </label>
+               </div>
+               <div class="wraper_result">
+                  <div id="result" class="result nowrap"></div>
+               </div>
             </div>
          </section>
       </main>
 
-      <script>
-         document.getElementById("data-form").addEventListener("submit", function (event) {
-            event.preventDefault();
-            const form = event.target;
-            const formData = new FormData(form);
-            const outputType = formData.get("outputType");
-            const links = formData.get("links");
-            const filename = formData.get("filename");
-            const actionUrl = outputType === "zip" ? "/api/v1/zip" : "/api/v1/json";
-
-            // Construct query parameters
-            const queryParams = new URLSearchParams({
-               url: links,
-               filename: filename,
-            }).toString();
-
-            // Set URL with query parameters
-            const urlWithParams = `${actionUrl}?${queryParams}`;
-
-            fetch(urlWithParams)
-               .then((response) => {
-                  if (response.ok) {
-                     if (outputType === "json") {
-                        return response.json();
-                     } else {
-                        // For ZIP file, handle as blob
-                        return response.blob();
-                     }
-                  } else {
-                     throw new Error("Network response was not ok.");
-                  }
-               })
-               .then((data) => {
-                  if (outputType === "json") {
-                     // Display JSON data
-                     const resultDiv = document.getElementById("result");
-                     resultDiv.textContent = JSON.stringify(data, null, 2);
-                  } else {
-                     // Handle file download
-                     const url = window.URL.createObjectURL(data);
-                     const a = document.createElement("a");
-                     a.href = url;
-                     a.download = filename + ".zip"; // Set default file name for ZIP
-                     document.body.appendChild(a);
-                     a.click();
-                     a.remove();
-                     window.URL.revokeObjectURL(url);
-                  }
-               })
-               .catch((error) => {
-                  console.error("Error:", error);
-               });
-         });
-      </script>
+      <script type="module" src="/static/js/main.js"></script>
    </body>
 </html>

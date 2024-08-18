@@ -10,6 +10,7 @@ import (
 
 // ServeForm serves the HTML form.
 func ServeForm(c *gin.Context) {
+	
 	c.HTML(http.StatusOK, "index.html", nil)
 }
 func HandleFormSubmission(c *gin.Context) {

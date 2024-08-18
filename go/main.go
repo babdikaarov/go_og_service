@@ -52,7 +52,6 @@ func main() {
     r.Use(cors.New(config))
 
     r.SetTrustedProxies([]string{"*"})
-   
     r.GET("/", handler.ServeForm)          // Serve the form
     // Swagger endpoint
     r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
