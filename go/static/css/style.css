@@ -206,3 +206,9 @@ textarea {
 .card_container_footer a:active {
    color: #dc3545;
 }
+
+.dns {
+   position: absolute;
+   bottom: 5px;
+   right: 5px;
+}
