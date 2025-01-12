@@ -1,4 +1,4 @@
-# Getting Started
+# Getting Started ![visitors](https://vbr.nathanchung.dev/badge?page_id=babdikaarov.go_og_service&color=00cf00)
 
 ## With Docker
 
